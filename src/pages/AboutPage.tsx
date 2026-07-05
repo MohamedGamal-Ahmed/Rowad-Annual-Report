@@ -1,4 +1,5 @@
 import { FileText, Calendar, Tag, AlertCircle } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { DashboardHeader } from "../components/header/DashboardHeader";
 import { SectionCard } from "../components/primitives/SectionCard";
 import { IconBadge } from "../components/primitives/IconBadge";
@@ -97,7 +98,7 @@ export function AboutPage() {
 }
 
 interface MetaCardProps {
-  icon: React.ComponentType<{ size?: number; color?: string }>;
+  icon: LucideIcon;
   tone: "navy" | "rose" | "gold" | "teal";
   label: string;
   value: string;
