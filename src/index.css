@@ -1,0 +1,250 @@
+@import "tailwindcss";
+
+@theme {
+  /* ===== Colors — ROWAD Design System (mirrors theme/tokens.ts) ===== */
+  --color-primary: #8B1E2D;
+  --color-primary-dark: #6B1622;
+  --color-primary-soft: #FCE8EB;
+  --color-secondary: #1B2A4A;
+  --color-secondary-soft: #E8EEF7;
+  --color-gold: #C9A15A;
+  --color-gold-soft: #F8EFDD;
+  --color-teal: #2F8F86;
+  --color-teal-soft: #E2F2F0;
+  --color-gray: #9CA3AF;
+  --color-gray-soft: #F1F2F4;
+  --color-bg: #F5F7FA;
+  --color-card: #FFFFFF;
+  --color-border: #E7E9EE;
+  --color-border-strong: #D8DCE3;
+  --color-success: #2E7D32;
+  --color-success-soft: #E8F5E9;
+  --color-warning: #ED6C02;
+  --color-warning-soft: #FDF1E6;
+  --color-error: #C62828;
+  --color-error-soft: #FBEAEA;
+  --color-text-primary: #16213E;
+  --color-text-body: #33414F;
+  --color-text-muted: #6B7280;
+  --color-text-on-dark-muted: rgba(255, 255, 255, 0.68);
+
+  /* ===== Typography ===== */
+  --font-sans: "Segoe UI", "Segoe UI Variable", system-ui, -apple-system, sans-serif;
+  --text-display: 19px;
+  --text-page-subtitle: 14px;
+  --text-section-title: 12.5px;
+  --text-kpi-label: 11.5px;
+  --text-kpi-value: 25px;
+  --text-kpi-subtitle: 10px;
+  --text-nav: 12.5px;
+  --text-nav-brand: 14px;
+  --text-nav-subtitle: 9px;
+  --text-table-header: 10.5px;
+  --text-table-cell: 11.5px;
+  --text-insight-title: 12px;
+  --text-insight-desc: 10px;
+  --text-filter-label: 9.5px;
+  --text-filter-value: 11.5px;
+
+  /* ===== Spacing scale ===== */
+  --space-xxs: 4px;
+  --space-xs: 6px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-xxl: 28px;
+
+  /* ===== Radius ===== */
+  --radius-card: 14px;
+  --radius-badge: 999px;
+  --radius-input: 8px;
+  --radius-pill: 999px;
+
+  /* ===== Shadows ===== */
+  --shadow-card: 0 1px 3px rgba(16, 33, 62, 0.07), 0 1px 2px rgba(16, 33, 62, 0.04);
+  --shadow-card-hover: 0 8px 20px rgba(16, 33, 62, 0.12), 0 2px 6px rgba(16, 33, 62, 0.06);
+
+  /* ===== Layout ===== */
+  --sidebar-width: 196px;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Print-only utility — inverse of `.no-print`. Elements carrying this class
+   (PrintReportHeader, PrintReportFooter) render nothing on screen; the
+   @media print override below (display: flex) is the only place they
+   become visible. Interactive experience is unaffected. */
+.print-only {
+  display: none;
+}
+
+/* Hide the Export PDF button while html2canvas is capturing the report
+   canvas. `visibility: hidden` preserves layout (no flex shift in the
+   sidebar) — critical for pixel-identical captures across pages. */
+body.pdf-exporting .pdf-export-button {
+  visibility: hidden !important;
+}
+
+/* Report Canvas print rules. Tight page margins, cancel the browser
+   scale transform so the printed canvas renders natively, avoid
+   page-break-after always which produces blank sheets, and expand
+   every overflow container so scrollable tables print in full. */
+
+@page {
+  size: A4 landscape;
+  margin: 6mm;
+
+  /* Guaranteed-to-work spot for page numbering. counter(page) and
+     counter(pages) are the browser's built-in paged-media counters, but
+     current browser support only reliably resolves them inside @page
+     margin boxes, not inside a regular DOM ::before (see the old
+     .page-counter-current / .page-counter-total rules this replaces).
+     Only content, font-*, color, and margin are portable inside a margin
+     box; background, border, and padding are deliberately omitted. */
+  @bottom-center {
+    content: "Page " counter(page) " of " counter(pages);
+    font-family: "Segoe UI", "Segoe UI Variable", system-ui, -apple-system, sans-serif;
+    font-size: 9.5px;
+    color: #6B7280;
+    margin-top: 2mm;
+  }
+}
+
+@media print {
+  html,
+  body {
+    background: white !important;
+    height: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: flex;
+  }
+
+  .canvas-outer {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .report-canvas {
+    background: white !important;
+  }
+
+  .report-canvas {
+    box-shadow: none !important;
+    margin: 0 !important;
+    transform: none !important;
+    page-break-after: auto;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .report-canvas .pf-row {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .report-canvas .page-scroll {
+    padding: 4px 10px 6px !important;
+    gap: 6px !important;
+  }
+
+  .report-canvas table th,
+  .report-canvas table td {
+    padding: 2px 8px !important;
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
+  }
+
+  .report-canvas .flex.gap-2[style*="height: 106"],
+  .report-canvas .flex.gap-2[style*="height:106"] {
+    height: 84px !important;
+  }
+  .report-canvas .flex.gap-2[style*="height: 106"] > div,
+  .report-canvas .flex.gap-2[style*="height:106"] > div {
+    padding: 4px 8px !important;
+    gap: 1px !important;
+  }
+
+  .report-canvas .pf-row[style*="height: 262"],
+  .report-canvas .pf-row[style*="height:262"] {
+    height: 200px !important;
+    min-height: 200px !important;
+  }
+
+  .report-canvas .pf-row[style*="height: 180"],
+  .report-canvas .pf-row[style*="height:180"] {
+    height: 158px !important;
+    min-height: 158px !important;
+  }
+  .report-canvas .pf-row[style*="height: 210"],
+  .report-canvas .pf-row[style*="height:210"] {
+    height: 180px !important;
+    min-height: 180px !important;
+  }
+
+  .report-canvas [style*="var(--text-kpi-value)"] {
+    font-size: 19px !important;
+    line-height: 1.05 !important;
+  }
+
+  .report-canvas [style*="var(--text-section-title)"] {
+    line-height: 1.15 !important;
+  }
+
+  .report-canvas .print-only {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .overflow-auto,
+  .overflow-y-auto,
+  .overflow-x-auto,
+  .overflow-hidden {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  [style*="overflow-y: auto"],
+  [style*="overflow-x: auto"],
+  [style*="overflow: auto"],
+  [style*="overflow-y:auto"],
+  [style*="overflow:auto"] {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  table {
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  thead th,
+  tfoot td {
+    position: static !important;
+  }
+}
