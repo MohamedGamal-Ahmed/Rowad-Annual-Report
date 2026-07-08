@@ -1,12 +1,14 @@
-# ROWAD Pre-Award — Executive Reporting
+# ROWAD Pre-Award &amp; Post-Award — Executive Reporting
 
-An interactive, print-safe executive dashboard for ROWAD's semi-annual Pre-Award report. Upload your tracking sheet and the report is generated on the fly — six pages, one executive question per page, exportable as a single versioned PDF.
+An interactive, print-safe executive dashboard covering ROWAD's full project lifecycle. Two independent report tabs, switched from the sidebar — **Pre-Award** (pipeline/bidding) and **Post-Award** (execution/contract management) — each with its own workbook upload, own data model, and own PDF export.
 
 **Live demo:** _(deploy on Vercel and paste URL here)_
 
 ---
 
-## What it does
+## Pre-Award tab
+
+Upload your Pre-Award tracking sheet and the report is generated on the fly — six pages, one executive question per page, exportable as a single versioned PDF.
 
 - Reads a ROWAD-format Pre-Award tracking workbook (`.xlsx`) entirely in the browser — no server, no uploads to anyone else.
 - Renders six focused executive pages:
@@ -19,7 +21,7 @@ An interactive, print-safe executive dashboard for ROWAD's semi-annual Pre-Award
 - One-click **PDF export**: the full six-page report as A4 landscape with confidential footer, snapshot date, report version, active-filter record, and page numbering.
 - Facts-only reporting: every number is traceable to a source cell. No inferred trends, no fabricated comparisons.
 
-## Business rules (frozen)
+### Business rules (frozen)
 
 1. Excel workbook is the single source of truth.
 2. A project is **Awarded** if and only if `Amount > 0` in any currency.
@@ -28,7 +30,7 @@ An interactive, print-safe executive dashboard for ROWAD's semi-annual Pre-Award
 5. `Fact_Agreements` is standalone — never joined to `Fact_Opportunities`.
 6. No date dimension → no monthly/quarterly trend charts, no "vs previous period" claims.
 
-## Expected workbook schema
+### Expected workbook schema
 
 The uploaded `.xlsx` must contain these sheets:
 
@@ -42,6 +44,31 @@ The uploaded `.xlsx` must contain these sheets:
 | `Data_Quality_Notes` | `Issue`, `Detail` (surfaced on the About page) |
 
 Column-name matching is case- and whitespace-tolerant.
+
+## Post-Award tab
+
+Upload the "Ongoing Report" execution-tracking workbook and get seven focused pages covering the full contract-management lifecycle: Portfolio Overview, Claims &amp; Variation Orders, Invoicing &amp; Cashflow, TOC/DLC Closeout, Subcontractor Management, Special Agreements, and Correspondence &amp; Project Register — plus an About page. Same independent-upload, facts-only, never-blend-currencies philosophy as Pre-Award, with its own PDF export.
+
+Unlike Pre-Award, the source workbook is a raw operational tracker (not a pre-cleaned star schema), so the parser (`src/parsers/postAwardExcelParser.ts`) matches each of its 12 sheets by fixed column position rather than header text — header text in this workbook has inconsistent line breaks and typos (`Spicial`, `Intity`, `Submision`). Sheet names are matched case/whitespace-tolerantly (e.g. `" Client Claim"`, `"HO  TOC"`, `"Spicial Agreement  "`).
+
+### Expected workbook schema
+
+| Sheet | Covers |
+|---|---|
+| `Project Information` | Contract master record: status, currency, dates, original/revised value, owner entity, location |
+| ` Client Claim` | EOT/escalation/prolongation/cost claims against the client |
+| `VO` | Variation Orders — submitted/approved/pending/cancelled |
+| `Invoice` | IPC cycle: gross submitted → certified → paid, delayed payments |
+| `HO  TOC` | Taking-Over Certificate / Defects Liability Certificate closeout |
+| `SC Claim` | Subcontractor-raised claims against ROWAD |
+| `SC Draft 2025` | Subcontract drafts issued this year |
+| `Corresponences` | Letter volume, main contract vs subcontractors |
+| `Spicial Agreement  ` | JV / Novation / Settlement / Consultancy agreements |
+| `Subcontract Review 2025` | Subcontract package review turnaround + over-budget flags |
+| `SubContract Agreement ` | Signed subcontract register (template — often empty) |
+| `Drob List` | The workbook's own per-project rollup across every sheet above — surfaced as the Project Master Register, not recomputed |
+
+Currencies: EGP / USD / SAR / EUR (no CFA, unlike Pre-Award).
 
 ## Getting started (local)
 

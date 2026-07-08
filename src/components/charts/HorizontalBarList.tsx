@@ -4,6 +4,11 @@ export interface HorizontalBarListRow {
   label: string;
   count: number;
   pct: number;
+  /** Optional pre-formatted override for the right-aligned value text (e.g.
+   * "EGP 78.31M"). When omitted, falls back to "count (pct%)". `count` still
+   * drives bar length/sort either way — this only changes what's printed,
+   * so money-based lists never display a blended cross-currency number. */
+  valueText?: string;
 }
 
 /** Generic horizontal bar-list row — the same visual language as
@@ -19,11 +24,13 @@ export function HorizontalBarList({
   labelWidth = 150,
   barColor = colors.primary,
   rowColors,
+  valueWidth = 78,
 }: {
   rows: HorizontalBarListRow[];
   labelWidth?: number;
   barColor?: string;
   rowColors?: string[];
+  valueWidth?: number;
 }) {
   const max = Math.max(1, ...rows.map((r) => r.count));
   return (
@@ -49,8 +56,8 @@ export function HorizontalBarList({
                 }}
               />
             </div>
-            <span className="shrink-0 font-semibold text-right" style={{ width: 78, fontSize: 10.5, color: "var(--color-text-primary)" }}>
-              {r.count} ({(r.pct * 100).toFixed(1)}%)
+            <span className="shrink-0 font-semibold text-right" style={{ width: valueWidth, fontSize: 10.5, color: "var(--color-text-primary)" }}>
+              {r.valueText ?? `${r.count} (${(r.pct * 100).toFixed(1)}%)`}
             </span>
           </div>
         );

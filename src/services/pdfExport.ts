@@ -1,6 +1,11 @@
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { REPORT_PERIOD_LABEL, REPORT_VERSION } from "../config/snapshot";
+import {
+  REPORT_PERIOD_LABEL,
+  REPORT_VERSION,
+  POST_AWARD_REPORT_PERIOD_LABEL,
+  POST_AWARD_REPORT_VERSION,
+} from "../config/snapshot";
 
 export interface ExportRoute {
   path: string;
@@ -18,6 +23,20 @@ export const EXPORT_ROUTES: ExportRoute[] = [
   { path: "/pipeline-analysis", label: "Pipeline Analysis" },
   { path: "/assignee-performance", label: "Team Performance" },
   { path: "/agreements-analysis", label: "Agreements Register" },
+];
+
+/** Post-Award report pages, captured in the same way as EXPORT_ROUTES. Kept
+ * as a separate list (rather than merging) because the two reports are
+ * independent uploads/tabs — a single PDF never mixes Pre- and Post-Award
+ * pages. */
+export const POST_AWARD_EXPORT_ROUTES: ExportRoute[] = [
+  { path: "/post-award/overview", label: "Portfolio Overview" },
+  { path: "/post-award/claims-vo", label: "Claims & Variation Orders" },
+  { path: "/post-award/invoicing", label: "Invoicing & Cashflow" },
+  { path: "/post-award/closeout", label: "TOC/DLC Closeout" },
+  { path: "/post-award/subcontractors", label: "Subcontractor Management" },
+  { path: "/post-award/agreements", label: "Special Agreements" },
+  { path: "/post-award/correspondence", label: "Correspondence & Register" },
 ];
 
 const CAPTURE_SELECTOR = ".report-canvas";
@@ -146,9 +165,11 @@ function prepareCloneForCapture(clonedDoc: Document): void {
   });
 }
 
-export async function exportReportAsPdf(
+async function exportRoutesAsPdf(
+  routes: ExportRoute[],
   navigate: (path: string) => void,
   originalPath: string,
+  fileName: string,
 ): Promise<void> {
   const pdf = new jsPDF({
     orientation: "landscape",
@@ -159,8 +180,8 @@ export async function exportReportAsPdf(
   const pageWidthMm = pdf.internal.pageSize.getWidth();
   const pageHeightMm = pdf.internal.pageSize.getHeight();
 
-  for (let i = 0; i < EXPORT_ROUTES.length; i++) {
-    const route = EXPORT_ROUTES[i];
+  for (let i = 0; i < routes.length; i++) {
+    const route = routes[i];
     navigate(route.path);
     await waitForRender();
 
@@ -194,7 +215,28 @@ export async function exportReportAsPdf(
   }
 
   navigate(originalPath);
+  pdf.save(fileName);
+}
+
+export async function exportReportAsPdf(
+  navigate: (path: string) => void,
+  originalPath: string,
+): Promise<void> {
   const today = new Date().toISOString().slice(0, 10);
   const period = REPORT_PERIOD_LABEL.replace(/\s+/g, "_");
-  pdf.save(`ROWAD_Pre-Award_${period}_v${REPORT_VERSION}_${today}.pdf`);
+  await exportRoutesAsPdf(EXPORT_ROUTES, navigate, originalPath, `ROWAD_Pre-Award_${period}_v${REPORT_VERSION}_${today}.pdf`);
+}
+
+export async function exportPostAwardReportAsPdf(
+  navigate: (path: string) => void,
+  originalPath: string,
+): Promise<void> {
+  const today = new Date().toISOString().slice(0, 10);
+  const period = POST_AWARD_REPORT_PERIOD_LABEL.replace(/\s+/g, "_");
+  await exportRoutesAsPdf(
+    POST_AWARD_EXPORT_ROUTES,
+    navigate,
+    originalPath,
+    `ROWAD_Post-Award_${period}_v${POST_AWARD_REPORT_VERSION}_${today}.pdf`,
+  );
 }

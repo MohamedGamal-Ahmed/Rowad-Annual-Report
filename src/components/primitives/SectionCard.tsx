@@ -14,13 +14,17 @@ interface SectionCardProps {
   children: ReactNode;
   padding?: number;
   className?: string;
+  /** Override the title font size (defaults to var(--text-section-title))
+   * — for panels with an unusually long title crammed into a narrow column,
+   * e.g. a 3-up row, where the standard size wraps awkwardly. */
+  titleFontSize?: number | string;
 }
 
 /** The one card container used for every chart/table/insights panel on
  * every page. Title bar + optional info tooltip + optional right-aligned
  * slot, soft shadow, subtle hover elevation. Nothing renders its own
  * bespoke bg/shadow/border — everything wraps in this. */
-export function SectionCard({ title, subtitle, info, right, children, padding = 12, className }: SectionCardProps) {
+export function SectionCard({ title, subtitle, info, right, children, padding = 12, className, titleFontSize }: SectionCardProps) {
   return (
     <motion.div
       className={`flex flex-col bg-card overflow-hidden ${className ?? ""}`}
@@ -41,7 +45,7 @@ export function SectionCard({ title, subtitle, info, right, children, padding = 
             <div className="flex items-center gap-1.5">
               <span
                 className="font-semibold"
-                style={{ fontSize: "var(--text-section-title)", color: "var(--color-secondary)" }}
+                style={{ fontSize: titleFontSize ?? "var(--text-section-title)", color: "var(--color-secondary)" }}
               >
                 {title}
               </span>

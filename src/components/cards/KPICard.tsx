@@ -21,6 +21,10 @@ interface KPICardProps {
    * dimension exists in the source data to support one. */
   trend?: string;
   footnote?: string;
+  /** Smaller icon/fonts/padding variant — used by the Post-Award report so
+   * a KPI strip of 6-8 cards reads as a compact summary bar rather than a
+   * full-size hero row. Pre-Award keeps the default (larger) size. */
+  compact?: boolean;
 }
 
 /** The single reusable KPI card used for every card in the KPI strip across
@@ -35,7 +39,13 @@ export function KPICard({
   subtitle,
   trend,
   footnote,
+  compact = false,
 }: KPICardProps) {
+  const iconSize = compact ? 20 : 26;
+  const labelSize = compact ? 10 : "var(--text-kpi-label)";
+  const subtitleSize = compact ? 9 : "var(--text-kpi-subtitle)";
+  const nodeValueSize = compact ? 11 : 12.5;
+
   return (
     <motion.div
       className="flex-1 flex flex-col bg-card overflow-hidden"
@@ -43,19 +53,19 @@ export function KPICard({
         borderRadius: radius.card,
         boxShadow: shadow.card,
         border: "1px solid var(--color-border)",
-        padding: "10px 12px",
+        padding: compact ? "7px 9px" : "10px 12px",
         minWidth: 0,
-        gap: 3,
+        gap: compact ? 2 : 3,
       }}
       whileHover={{ boxShadow: shadow.cardHover, y: -2 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
       <div className="flex items-center gap-2 min-w-0">
-        <IconBadge icon={icon} tone={tone} size={26} />
+        <IconBadge icon={icon} tone={tone} size={iconSize} />
         <span
           className="font-bold min-w-0"
           style={{
-            fontSize: "var(--text-kpi-label)",
+            fontSize: labelSize,
             color: "var(--color-text-primary)",
             lineHeight: 1.15,
             display: "-webkit-box",
@@ -70,19 +80,19 @@ export function KPICard({
       {(() => {
         // Auto-shrink value font size for long text values (e.g. "Hana&Donia",
         // country names) so they fit the KPI card width without truncation.
-        // Numbers and short strings keep the display font (25 px); longer
-        // strings scale down progressively. ReactNodes (like the currency
-        // breakdown) render at 12.5 px in the natural flow instead of the
-        // huge display font. */
+        // Numbers and short strings keep the display font (25 px, or 19 px
+        // compact); longer strings scale down progressively. ReactNodes (like
+        // the currency breakdown) render small in the natural flow instead of
+        // the huge display font. */
         const isText = typeof value === "string" || typeof value === "number";
         const asString = isText ? String(value) : "";
-        let sz: string | number = "var(--text-kpi-value)";
+        let sz: string | number = compact ? 19 : "var(--text-kpi-value)";
         if (isText) {
-          if (asString.length > 12) sz = 15;
-          else if (asString.length > 9) sz = 17;
-          else if (asString.length > 6) sz = 20;
+          if (asString.length > 12) sz = compact ? 12 : 15;
+          else if (asString.length > 9) sz = compact ? 14 : 17;
+          else if (asString.length > 6) sz = compact ? 16 : 20;
         } else {
-          sz = 12.5;
+          sz = nodeValueSize;
         }
         return (
           <span
@@ -99,21 +109,21 @@ export function KPICard({
         );
       })()}
       {subtitle && (
-        <span className="truncate" style={{ fontSize: "var(--text-kpi-subtitle)", color: "var(--color-text-muted)" }}>
+        <span className="truncate" style={{ fontSize: subtitleSize, color: "var(--color-text-muted)" }}>
           {subtitle}
         </span>
       )}
       {trend && (
         <span
           className="flex items-center gap-1 font-semibold truncate"
-          style={{ fontSize: "var(--text-kpi-subtitle)", color: "var(--color-success)" }}
+          style={{ fontSize: subtitleSize, color: "var(--color-success)" }}
         >
           <ArrowUpRight size={11} className="shrink-0" />
           <span className="truncate">{trend}</span>
         </span>
       )}
       {footnote && (
-        <span className="truncate" style={{ fontSize: "var(--text-kpi-subtitle)", color: "var(--color-text-muted)" }}>
+        <span className="truncate" style={{ fontSize: subtitleSize, color: "var(--color-text-muted)" }}>
           {footnote}
         </span>
       )}

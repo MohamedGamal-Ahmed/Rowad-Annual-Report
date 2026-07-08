@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Download, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
-import { exportReportAsPdf } from "../../services/pdfExport";
+import { exportReportAsPdf, exportPostAwardReportAsPdf } from "../../services/pdfExport";
 
 /** "Export PDF" button in the sidebar bottom. Captures every implemented
  *  route as a high-DPI PNG via html2canvas, composes them into a single
@@ -20,7 +20,9 @@ export function ExportPdfButton() {
     setBusy(true);
     document.body.classList.add("pdf-exporting");
     try {
-      await exportReportAsPdf((path) => navigate(path), location.pathname);
+      const isPostAward = location.pathname.startsWith("/post-award");
+      const exportFn = isPostAward ? exportPostAwardReportAsPdf : exportReportAsPdf;
+      await exportFn((path) => navigate(path), location.pathname);
     } catch (err) {
       console.error("PDF export failed:", err);
     } finally {

@@ -76,6 +76,25 @@ export const currencyPalette: Record<"EGP" | "USD" | "SAR" | "EURO" | "CFA", str
   CFA: colors.gray,
 };
 
+/** General-purpose categorical palette for bar-list / donut breakdowns that
+ * aren't tied to a specific country/currency (status distributions, claim
+ * types, review outcomes, etc.) — cycles through 8 visually distinct brand
+ * colors instead of every row rendering in the same default tone. */
+export const categoricalPalette = [
+  colors.secondary,
+  colors.primary,
+  colors.teal,
+  colors.gold,
+  colors.gray,
+  colors.success,
+  colors.warning,
+  colors.primaryDark,
+];
+
+export function categoricalColor(index: number): string {
+  return categoricalPalette[index % categoricalPalette.length];
+}
+
 export const REPORT_CANVAS_WIDTH = 1280;
 export const REPORT_CANVAS_HEIGHT = 720;
 export const SIDEBAR_WIDTH = 196;

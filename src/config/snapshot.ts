@@ -12,3 +12,11 @@
 export const SNAPSHOT_DATE_LABEL = "01 Jul 2026";
 export const REPORT_PERIOD_LABEL = "H1 2026";
 export const REPORT_VERSION = "1.0.0";
+
+// Post-Award dashboard — separate snapshot/version track, same "never
+// derive from the clock" rule. Source workbook is "Ongoing Report Annual
+// Report-2025" (a full-year ongoing-projects tracker, not a semi-annual
+// pipeline snapshot like Pre-Award), hence the distinct period label.
+export const POST_AWARD_SNAPSHOT_DATE_LABEL = "01 Jul 2026";
+export const POST_AWARD_REPORT_PERIOD_LABEL = "FY 2025";
+export const POST_AWARD_REPORT_VERSION = "1.0.0";
